@@ -1,0 +1,16 @@
+﻿node_modules/
+dist/
+dist-release/
+dist-installer/
+win-unpacked/
+build/icon.ico
+build/icon-ico/
+*.exe
+*.blockmap
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+builder-debug.yml
+builder-effective-config.yaml

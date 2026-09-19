@@ -1,0 +1,75 @@
+{
+  "name": "getgrc-agent",
+  "version": "1.0.0",
+  "description": "GetGRC security agent for Windows",
+  "private": true,
+  "main": "src/main.js",
+  "author": "GetGRC",
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron .",
+    "prebuild:win": "node scripts/prebuild-win.js",
+    "build:win": "npm run prebuild:win && electron-builder --win --x64"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "electron": "^33.3.1",
+    "electron-builder": "24.13.3",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4"
+  },
+  "build": {
+    "appId": "com.getgrc.agent",
+    "productName": "GetGRC",
+    "directories": {
+      "output": "dist-release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*"
+    ],
+    "asarUnpack": [
+      "src/scanner/**/*.ps1"
+    ],
+    "extraResources": [
+      {
+        "from": "../client/dist",
+        "to": "client/dist",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "shortcutName": "GetGRC",
+      "differentialPackage": false,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh",
+      "installerLanguages": [
+        "en_US"
+      ],
+      "displayLanguageSelector": false
+    }
+  }
+}
