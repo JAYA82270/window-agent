@@ -49,16 +49,19 @@ try {
   $result.installedSoftware = @($softwareMap.Values | Sort-Object { $_.name } | Select-Object -First 500)
 
   $passwordManagerPattern = '1Password|LastPass|Bitwarden|Dashlane|Keeper|NordPass|RoboForm|Enpass|KeePass|Password Manager'
-  $result.passwordManager = $false
+  $passwordCompliant = $false
   foreach ($app in $result.installedSoftware) {
     if ($app.name -match $passwordManagerPattern) {
-      $result.passwordManager = $true
+      $passwordCompliant = $true
       break
     }
   }
+  $result.passwordCompliant = $passwordCompliant
+  $result.passwordPolicy = @{ compliant = $passwordCompliant }
 } catch {
   $result.installedSoftware = @()
-  $result.passwordManager = $false
+  $result.passwordCompliant = $false
+  $result.passwordPolicy = @{ compliant = $false }
 }
 
 $result | ConvertTo-Json -Depth 8 -Compress
