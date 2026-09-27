@@ -13,6 +13,15 @@ try { $fw=Get-NetFirewallProfile; $result.firewall=($fw | Where-Object Enabled).
 try { $result.secureBoot = [bool](Confirm-SecureBootUEFI) } catch { $result.secureBoot=$false }
 try { $defender=Get-CimInstance -Namespace Root\Microsoft\Windows\Defender -Class MSFT_MpComputerStatus; $result.defenderEnabled=$defender.AntivirusEnabled; $result.defenderRealTime=$defender.RealTimeProtectionEnabled; $result.defenderVersion=$defender.AMProductVersion } catch { $result.defenderEnabled=$false; $result.defenderRealTime=$false }
 try { $result.windowsActivated=((Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%%'" | Where-Object PartialProductKey | Select-Object -First 1).LicenseStatus -eq 1) } catch { $result.windowsActivated=$false }
+try {
+  $lockOut = powercfg /qh SCHEME_CURRENT SUB_NONE CONSOLELOCK | Out-String
+  $ac = [regex]::Match($lockOut, 'Current AC Power Setting Index:\s+0x([0-9A-Fa-f]+)')
+  $dc = [regex]::Match($lockOut, 'Current DC Power Setting Index:\s+0x([0-9A-Fa-f]+)')
+  $indexes = @()
+  if ($ac.Success) { $indexes += [Convert]::ToInt32($ac.Groups[1].Value, 16) }
+  if ($dc.Success) { $indexes += [Convert]::ToInt32($dc.Groups[1].Value, 16) }
+  $result.screenLockEnabled = ($indexes.Count -gt 0) -and (($indexes | Where-Object { $_ -ne 1 }).Count -eq 0)
+} catch { $result.screenLockEnabled = $false }
 
 try {
   $softwareMap = @{}

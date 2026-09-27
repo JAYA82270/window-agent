@@ -35,6 +35,7 @@ async function runScan() {
       payload.tokenId = checklistId;
     }
 
+    log.info('Scan payload', payload);
     const result = await api.uploadScan(payload);
     store.setConfig({ lastScanAt: new Date().toISOString() });
     log.info('Scan uploaded', result);
